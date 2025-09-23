@@ -1,23 +1,31 @@
-import logo from './logo.svg';
-import './App.css';
+import React from "react";
+import Navbar from "./components/Navbar";
+import BookingSection from "./components/BookingSection";
+import ServicesSection from "./components/ServicesSection";
+import ProfileSection from "./components/ProfileSection";
+import ContactModal from "./components/ContactModal";
+import FooterSection from "./components/FooterSection";
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div className="app-container">
+      {/* Video background */}
+      <video autoPlay loop muted className="background-video">
+        <source src="/assets/videos/background-better.mp4" type="video/mp4" />
+        Your browser does not support the video tag.
+      </video>
+
+      {/* Page content */}
+      <div className="content">
+        <Navbar />
+        <ProfileSection />
+        <ServicesSection />
+        <BookingSection />
+        <ContactModal />
+      </div>
+
+      {/* Sticky Footer */}
+      <FooterSection />
     </div>
   );
 }

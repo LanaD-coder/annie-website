@@ -1,0 +1,261 @@
+body {
+  margin: 0;
+  padding: 0;
+  font-family: "Sansation", sans-serif;
+  background-color: #c297b8;
+  color: #333; /* Dark text color */
+}
+
+em {
+  font-family: "Kapakana", sans-serif;
+}
+
+header {
+  background-color: #820263;
+  color: #fff;
+  padding: 1rem;
+  text-align: center;
+}
+
+section {
+  padding: 2rem;
+  margin: 1rem 0;
+  background-color: rgba(211, 211, 211, 0.7);
+  border-radius: 8px;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+}
+
+section h1 {
+  font-size: 7rem;
+  line-height: 1.2;
+  text-align: center;
+  margin-bottom: 1rem;
+  margin-top: 0;
+  color: #894668;
+  filter: drop-shadow(2px 2px 4px rgba(0, 0, 0, 0.5));
+}
+
+main {
+  padding: 2rem;
+}
+
+footer {
+  background-color: #be3e82;
+  color: #fff;
+  padding: 0.5rem;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+/* Video background */
+.background-video {
+  position: fixed; /* Fixed behind all content */
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: -1; /* Behind everything */
+}
+
+/* Content above the video */
+.content {
+  position: relative;
+  z-index: 1;
+}
+
+.app-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.navbar {
+  background-color: #be3e82;
+  padding: 1rem;
+  text-align: right;
+}
+
+.navbar-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.navbar ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.navbar li {
+  display: inline-block;
+  margin: 0 1rem;
+}
+
+.navbar a {
+  color: #fff; /* White text for contrast */
+  text-decoration: none;
+  font-weight: bold;
+}
+
+/* Logo styling */
+.logo img {
+  height: 50px;
+  width: auto;
+  filter: drop-shadow(2px 2px 4px rgba(0, 0, 0, 0.5));
+}
+
+.profile-section {
+  display: flex;
+  position: relative;
+  height: 400px;
+  overflow: hidden;
+  margin: 2rem 0;
+}
+
+/* Left text area */
+.profile-text {
+  flex: 1;
+  background-color: rgba(211, 211, 211, 0.85); /* faded background */
+  padding: 3rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  clip-path: polygon(0 0, 100% 0, 85% 100%, 0% 100%); /* diagonal cut */
+  z-index: 2;
+}
+
+.profile-image {
+  flex: 2;
+  position: relative;
+  clip-path: polygon(15% 0, 100% 0, 100% 100%, 0 100%);
+  overflow: hidden;
+}
+
+.profile-image img {
+  width: 110%; /* expand a bit to avoid tight crop */
+  height: 110%;
+  object-fit: cover;
+  object-position: center center;
+}
+
+.profile-section::before {
+  left: calc(50% - 15px);
+  background: #c297b8;
+}
+
+.profile-section::after {
+  left: 50%;
+  background: #40434e;
+}
+
+/* Text styling */
+.profile-text h1 {
+  font-size: 6rem;
+  margin-bottom: 1rem;
+  color: #894668;
+  font-family: "Kapakana", sans-serif;
+  letter-spacing: -2px;
+  word-spacing: 0;
+}
+
+.profile-text p {
+  font-size: 1.1rem;
+  color: #333;
+}
+
+.services {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem; /* spacing between cards */
+  justify-content: center;
+  margin-top: 2rem;
+}
+
+.services-title {
+  font-size: 3rem;
+  font-weight: 590;
+  display: inline-block; /* allows padding if needed */
+  padding: 0.5rem 1rem;
+  color: #894668; /* optional */
+}
+
+.service-grid {
+  background-color: #fff;
+  border-radius: 12px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+  overflow: hidden;
+  width: 250px; /* fixed card width */
+  text-align: center;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.service-grid:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25);
+}
+
+.service-grid img {
+  width: 100%;
+  height: 180px; /* fixed image height */
+  object-fit: cover;
+}
+
+.service-grid h3 {
+  margin: 1rem 0 0.5rem 0;
+  color: #894668;
+}
+
+.service-grid p {
+  padding: 0 1rem 1rem 1rem;
+  font-size: 0.95rem;
+  color: #333;
+}
+
+@media (min-width: 1200px) {
+  .profile-text {
+    clip-path: polygon(0 0, 95% 0, 85% 100%, 0% 100%);
+  }
+
+  .profile-image {
+    clip-path: polygon(5% 0, 100% 0, 100% 100%, 0 100%);
+  }
+}
+
+@media (max-width: 480px) {
+  section {
+    padding: 0;
+  }
+
+  .profile-section {
+    height: 80vh;
+    width: 100vw;
+  }
+
+  .profile-text {
+    clip-path: polygon(0 0, 100% 0, 90% 100%, 0% 100%); /* diagonal preserved */
+    padding: 1rem; /* reduce padding */
+  }
+
+  .profile-text h1 {
+    font-size: 3rem; /* shrink heading */
+    line-height: 1.1;
+    letter-spacing: -1px;
+  }
+
+  .profile-text p {
+    font-size: 0.9rem; /* shrink paragraph */
+  }
+
+  .profile-image {
+    clip-path: polygon(10% 0, 100% 0, 100% 100%, 0 100%);
+  }
+
+  .profile-image img {
+    width: 120%; /* slightly expand image to prevent cropping */
+    height: 120%;
+    object-fit: cover;
+    object-position: center center;
+  }
+}
