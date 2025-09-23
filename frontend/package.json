@@ -2,7 +2,7 @@
   "name": "annie-website",
   "version": "0.1.0",
   "private": true,
-  "homepage": "https://<your-username>.github.io/annie-website",
+  "homepage": "https://LanaD-coder.github.io/annie-website",
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
