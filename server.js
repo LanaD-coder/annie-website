@@ -1,8 +1,9 @@
-// backend/server.js
+// server.js
 require("dotenv").config(); // load environment variables
 const express = require("express");
 const cors = require("cors");
 const nodemailer = require("nodemailer");
+const path = require("path");
 
 const ADMIN_USERNAME = process.env.ADMIN_USERNAME;
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD;
@@ -10,15 +11,7 @@ const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD;
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-const path = require("path");
-
-// Serve static files from React build
-app.use(express.static(path.join(__dirname, "build")));
-
-app.get("*", (req, res) => {
-  res.sendFile(path.join(__dirname, "build", "index.html"));
-});
-
+// Middleware
 app.use(cors());
 app.use(express.json());
 
@@ -29,22 +22,17 @@ let bookings = [];
 const transporter = nodemailer.createTransport({
   service: "gmail",
   auth: {
-    user: process.env.EMAIL_USER, // your Gmail
-    pass: process.env.EMAIL_PASS, // app password
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASS,
   },
 });
 
-// Routes
-app.get("/", (req, res) => {
-  res.send("Booking API is running!");
-});
+// API Routes
 
-// Get all bookings
 app.get("/bookings", (req, res) => {
   res.json(bookings);
 });
 
-// Create a new booking
 app.post("/bookings", (req, res) => {
   const { name, email, date, time, service } = req.body;
 
@@ -72,12 +60,11 @@ app.post("/bookings", (req, res) => {
   // Email to admin
   const adminMailOptions = {
     from: process.env.EMAIL_USER,
-    to: process.env.ADMIN_EMAIL, // put your admin email in .env
+    to: process.env.ADMIN_EMAIL,
     subject: "New Booking Received",
     text: `New booking received:\n\nName: ${name}\nEmail: ${email}\nService: ${service}\nDate: ${date}\nTime: ${time}`,
   };
 
-  // Send emails
   transporter.sendMail(bookerMailOptions, (err, info) => {
     if (err) console.error("Error sending booker email:", err);
     else console.log("Booker email sent:", info.response);
@@ -91,19 +78,13 @@ app.post("/bookings", (req, res) => {
   res.status(201).json(newBooking);
 });
 
-// Delete a booking
 app.delete("/bookings/:id", (req, res) => {
   const { id } = req.params;
   bookings = bookings.filter((b) => b.id !== parseInt(id));
   res.json({ message: "Booking deleted" });
 });
 
-// Start server
-app.listen(PORT, () => {
-  console.log(`Server running on http://localhost:${PORT}`);
-});
-
-// Middleware already defined above
+// Basic auth middleware
 const basicAuth = (req, res, next) => {
   const authHeader = req.headers.authorization;
 
@@ -123,7 +104,18 @@ const basicAuth = (req, res, next) => {
   return res.status(403).send("Forbidden");
 };
 
-// Protected admin route
+// Admin route
 app.get("/admin/bookings", basicAuth, (req, res) => {
   res.json(bookings);
+});
+
+// Serve React frontend (catch-all, must be last)
+app.use(express.static(path.join(__dirname, "frontend/build")));
+app.get("/*", (req, res) => {
+  res.sendFile(path.join(__dirname, "frontend/build", "index.html"));
+});
+
+// Start server
+app.listen(PORT, () => {
+  console.log(`Server running on http://localhost:${PORT}`);
 });
