@@ -4,8 +4,20 @@ const express = require("express");
 const cors = require("cors");
 const nodemailer = require("nodemailer");
 
+const ADMIN_USERNAME = process.env.ADMIN_USERNAME;
+const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD;
+
 const app = express();
 const PORT = process.env.PORT || 5000;
+
+const path = require("path");
+
+// Serve static files from React build
+app.use(express.static(path.join(__dirname, "build")));
+
+app.get("*", (req, res) => {
+  res.sendFile(path.join(__dirname, "build", "index.html"));
+});
 
 app.use(cors());
 app.use(express.json());
@@ -89,4 +101,29 @@ app.delete("/bookings/:id", (req, res) => {
 // Start server
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
+});
+
+// Middleware already defined above
+const basicAuth = (req, res, next) => {
+  const authHeader = req.headers.authorization;
+
+  if (!authHeader) {
+    res.setHeader("WWW-Authenticate", "Basic");
+    return res.status(401).send("Authentication required.");
+  }
+
+  const [username, password] = Buffer.from(authHeader.split(" ")[1], "base64")
+    .toString()
+    .split(":");
+
+  if (username === ADMIN_USERNAME && password === ADMIN_PASSWORD) {
+    return next();
+  }
+
+  return res.status(403).send("Forbidden");
+};
+
+// Protected admin route
+app.get("/admin/bookings", basicAuth, (req, res) => {
+  res.json(bookings);
 });
