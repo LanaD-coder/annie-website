@@ -4,7 +4,10 @@ function ProfileSection() {
   return (
     <section className="profile-section">
       <div className="profile-image">
-        <img src="/assets/images/annie-profile-pic.png" alt="Salon La Vida" />
+        <img
+          src={`${process.env.PUBLIC_URL}/assets/images/annie-profile-pic.png`}
+          alt="Salon La Vida"
+        />
       </div>
 
       <div className="profile-text">

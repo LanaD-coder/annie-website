@@ -213,6 +213,79 @@ footer {
   color: #333;
 }
 
+.booking-section {
+  padding: 2rem;
+  background-color: rgba(211, 211, 211, 0.85);
+  border-radius: 12px;
+  margin: 2rem 0;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+}
+
+.booking-message {
+  color: green;
+  margin-bottom: 1rem;
+}
+
+.booking-form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.booking-form input,
+.booking-form select {
+  padding: 0.5rem;
+  font-size: 1rem;
+  flex: 1 1 200px;
+}
+
+.booking-form button {
+  padding: 0.5rem 1rem;
+  font-size: 1rem;
+  background-color: #820263;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  flex: 1 1 100px;
+}
+
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 1rem;
+}
+
+.calendar-day {
+  background-color: #fff;
+  border-radius: 8px;
+  padding: 1rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.calendar-day h4 {
+  margin-top: 0;
+  margin-bottom: 0.5rem;
+  color: #894668;
+}
+
+.calendar-day ul {
+  padding-left: 1rem;
+  margin: 0;
+}
+
+.calendar-info {
+  font-size: 0.9rem;
+  margin-bottom: 1rem;
+  color: #555;
+}
+
+.full-day {
+  color: red;
+  font-weight: bold;
+}
+
 @media (min-width: 1200px) {
   .profile-text {
     clip-path: polygon(0 0, 95% 0, 85% 100%, 0% 100%);

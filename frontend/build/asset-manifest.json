@@ -1,13 +1,13 @@
 {
   "files": {
     "main.css": "/annie-website/static/css/main.6804a8af.css",
-    "main.js": "/annie-website/static/js/main.d1881a31.js",
+    "main.js": "/annie-website/static/js/main.93f86d27.js",
     "index.html": "/annie-website/index.html",
     "main.6804a8af.css.map": "/annie-website/static/css/main.6804a8af.css.map",
-    "main.d1881a31.js.map": "/annie-website/static/js/main.d1881a31.js.map"
+    "main.93f86d27.js.map": "/annie-website/static/js/main.93f86d27.js.map"
   },
   "entrypoints": [
     "static/css/main.6804a8af.css",
-    "static/js/main.d1881a31.js"
+    "static/js/main.93f86d27.js"
   ]
 }

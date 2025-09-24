@@ -7,7 +7,10 @@ function Navbar() {
       <div className="navbar-container">
         {/* Logo on the left */}
         <div className="logo">
-          <img src="/assets/images/logo-annie.png" alt="Logo" />
+          <img
+            src={`${process.env.PUBLIC_URL}/assets/images/logo-annie.png`}
+            alt="Logo"
+          />
         </div>
 
         {/* Navigation links */}
