@@ -2,12 +2,10 @@
   "name": "annie-website",
   "version": "0.1.0",
   "private": true,
-  "homepage": "https://LanaD-coder.github.io/annie-website",
+  "homepage": ".",
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
-    "predeploy": "npm run build",
-    "deploy": "gh-pages -d build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
