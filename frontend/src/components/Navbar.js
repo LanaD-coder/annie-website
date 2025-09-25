@@ -44,13 +44,13 @@ function Navbar() {
             {isAdmin ? (
               <li>
                 <Link to="/admin">
-                  <RiAdminFill size={20} /> Admin Dashboard
+                  <RiAdminFill size={20} />
                 </Link>
               </li>
             ) : (
               <li>
                 <Link to="/admin/login">
-                  <RiAdminFill size={20} /> Admin Login
+                  <RiAdminFill size={20} />
                 </Link>
               </li>
             )}
