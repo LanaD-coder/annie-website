@@ -1,6 +1,6 @@
 export const services = [
   {
-    name: "Hairstyling & Braiding",
+    name: "Haarsny - ",
     image: `${process.env.PUBLIC_URL}/assets/images/pexels-alinaskazka-14730865.jpg`,
     description: "Professional hairstyling and braiding to make you shine.",
   },
