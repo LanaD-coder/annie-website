@@ -11,6 +11,8 @@ function BookingSection() {
     service: "",
   });
   const [message, setMessage] = useState("");
+  const [date, setDate] = useState("");
+  const [time, setTime] = useState("");
 
   useEffect(() => {
     fetch("/bookings")
@@ -26,18 +28,21 @@ function BookingSection() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    const selectedDate = formData.date;
+    const selectedTime = formData.time;
+
     // Prevent more than 5 total per date
-    const bookingsOnDate = bookings.filter((b) => b.date === date);
+    const bookingsOnDate = bookings.filter((b) => b.date === selectedDate);
     if (bookingsOnDate.length >= 5) {
-      return res.status(400).json({ error: "This date is fully booked" });
+      setMessage("This date is fully booked");
+      return;
     }
 
     // Prevent double booking for the same time
-    const sameTimeBooking = bookingsOnDate.find((b) => b.time === time);
+    const sameTimeBooking = bookingsOnDate.find((b) => b.time === selectedTime);
     if (sameTimeBooking) {
-      return res
-        .status(400)
-        .json({ error: "This time slot is already booked" });
+      setMessage("This time slot is already booked");
+      return;
     }
 
     try {
