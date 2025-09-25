@@ -4,6 +4,7 @@ const express = require("express");
 const cors = require("cors");
 const nodemailer = require("nodemailer");
 const path = require("path");
+const session = require("express-session");
 
 const ADMIN_USERNAME = process.env.ADMIN_USERNAME;
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD;
@@ -12,8 +13,23 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 
 // Middleware
-app.use(cors());
+app.use(
+  cors({
+    origin: true,
+    credentials: true, // allow cookies
+  })
+);
 app.use(express.json());
+
+// Session setup
+app.use(
+  session({
+    secret: process.env.SESSION_SECRET,
+    resave: false,
+    saveUninitialized: false,
+    cookie: { secure: process.env.NODE_ENV === "production" }, // secure cookies in production
+  })
+);
 
 // Temporary in-memory store for bookings
 let bookings = [];
@@ -27,12 +43,12 @@ const transporter = nodemailer.createTransport({
   },
 });
 
-// API Routes
-
+// Public route for normal users
 app.get("/bookings", (req, res) => {
-  res.json(bookings);
+  res.json([]); // normal users cannot see bookings
 });
 
+// Add a new booking
 app.post("/bookings", (req, res) => {
   const { name, email, date, time, service } = req.body;
 
@@ -40,7 +56,13 @@ app.post("/bookings", (req, res) => {
     return res.status(400).json({ error: "All fields are required" });
   }
 
-  // Check if the date is full (max 5 slots)
+  // Prevent double bookings at the same time slot
+  const isSlotTaken = bookings.some((b) => b.date === date && b.time === time);
+  if (isSlotTaken) {
+    return res.status(400).json({ error: "This time slot is already booked" });
+  }
+
+  // Max 5 bookings per date
   const bookingsOnDate = bookings.filter((b) => b.date === date);
   if (bookingsOnDate.length >= 5) {
     return res.status(400).json({ error: "This date is fully booked" });
@@ -78,38 +100,48 @@ app.post("/bookings", (req, res) => {
   res.status(201).json(newBooking);
 });
 
-app.delete("/bookings/:id", (req, res) => {
+// Delete a booking (admin only)
+app.delete("/bookings/:id", requireAdmin, (req, res) => {
   const { id } = req.params;
   bookings = bookings.filter((b) => b.id !== parseInt(id));
   res.json({ message: "Booking deleted" });
 });
 
-// Basic auth middleware
-const basicAuth = (req, res, next) => {
-  const authHeader = req.headers.authorization;
-
-  if (!authHeader) {
-    res.setHeader("WWW-Authenticate", "Basic");
-    return res.status(401).send("Authentication required.");
-  }
-
-  const [username, password] = Buffer.from(authHeader.split(" ")[1], "base64")
-    .toString()
-    .split(":");
+// Admin login
+app.post("/admin/login", (req, res) => {
+  const { username, password } = req.body;
 
   if (username === ADMIN_USERNAME && password === ADMIN_PASSWORD) {
-    return next();
+    req.session.isAdmin = true;
+    return res.status(200).json({ message: "Login successful" });
   }
 
-  return res.status(403).send("Forbidden");
-};
+  res.status(401).json({ error: "Invalid credentials" });
+});
 
-// Admin route
-app.get("/admin/bookings", basicAuth, (req, res) => {
+// Admin logout
+app.post("/admin/logout", (req, res) => {
+  req.session.destroy();
+  res.sendStatus(200);
+});
+
+// Check admin status
+app.get("/admin/status", (req, res) => {
+  res.json({ isAdmin: !!req.session.isAdmin });
+});
+
+// Middleware to protect admin routes
+function requireAdmin(req, res, next) {
+  if (req.session?.isAdmin) return next();
+  res.sendStatus(401);
+}
+
+// Protected admin bookings route
+app.get("/admin/bookings", requireAdmin, (req, res) => {
   res.json(bookings);
 });
 
-// Serve React frontend (catch-all, must be last)
+// Serve React frontend
 app.use(express.static(path.join(__dirname, "frontend", "build")));
 app.get("/*", (req, res) => {
   res.sendFile(path.join(__dirname, "frontend", "build", "index.html"));

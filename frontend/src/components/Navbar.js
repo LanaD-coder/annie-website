@@ -1,7 +1,16 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
 function Navbar() {
+  const [isAdmin, setIsAdmin] = useState(false);
+
+  useEffect(() => {
+    fetch("/admin/status")
+      .then((res) => res.json())
+      .then((data) => setIsAdmin(data.isAdmin))
+      .catch(() => setIsAdmin(false));
+  }, []);
+
   return (
     <header className="navbar">
       <div className="navbar-container">
@@ -28,6 +37,17 @@ function Navbar() {
             <li>
               <Link to="/contact">Contact</Link>
             </li>
+
+            {/* Conditional admin link */}
+            {isAdmin ? (
+              <li>
+                <Link to="/admin">Admin Dashboard</Link>
+              </li>
+            ) : (
+              <li>
+                <Link to="/admin/login">Admin Login</Link>
+              </li>
+            )}
           </ul>
         </nav>
       </div>

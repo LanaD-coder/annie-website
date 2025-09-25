@@ -13,7 +13,7 @@ function BookingSection() {
   const [message, setMessage] = useState("");
 
   useEffect(() => {
-    fetch("http://localhost:5000/bookings")
+    fetch("/bookings")
       .then((res) => res.json())
       .then((data) => setBookings(data))
       .catch((err) => console.error(err));
@@ -26,17 +26,22 @@ function BookingSection() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Check if selected date already has 5 bookings
-    const dateBookings = bookings.filter((b) => b.date === formData.date);
-    if (dateBookings.length >= 5) {
-      setMessage(
-        `The selected date (${formData.date}) is full. Please choose another date.`
-      );
-      return;
+    // Prevent more than 5 total per date
+    const bookingsOnDate = bookings.filter((b) => b.date === date);
+    if (bookingsOnDate.length >= 5) {
+      return res.status(400).json({ error: "This date is fully booked" });
+    }
+
+    // Prevent double booking for the same time
+    const sameTimeBooking = bookingsOnDate.find((b) => b.time === time);
+    if (sameTimeBooking) {
+      return res
+        .status(400)
+        .json({ error: "This time slot is already booked" });
     }
 
     try {
-      const res = await fetch("http://localhost:5000/bookings", {
+      const res = await fetch("/bookings", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
