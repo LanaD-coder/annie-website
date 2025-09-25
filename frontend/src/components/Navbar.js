@@ -38,7 +38,7 @@ function Navbar() {
             <li>
               <Link to="/">
                 <FaPhoneVolume size={20} />
-              </Link>{" "}
+              </Link>
             </li>
 
             {isAdmin ? (

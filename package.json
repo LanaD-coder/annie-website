@@ -2,8 +2,10 @@
   "name": "annie-website",
   "version": "1.0.0",
   "private": true,
+  "homepage": "https://<your-username>.github.io/annie-website",
   "scripts": {
-    "start": "node server.js"
+    "start": "node server.js",
+    "deploy": "gh-pages -d build"
   },
   "dependencies": {
     "axios": "^1.12.2",
