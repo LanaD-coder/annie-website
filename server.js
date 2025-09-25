@@ -5,6 +5,8 @@ const cors = require("cors");
 const nodemailer = require("nodemailer");
 const path = require("path");
 const session = require("express-session");
+const RedisStore = require("connect-redis").default;
+const { createClient } = require("redis");
 
 const ADMIN_USERNAME = process.env.ADMIN_USERNAME;
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD;
@@ -21,20 +23,34 @@ app.use(
 );
 app.use(express.json());
 
-// Session setup
+// ---------------------------
+// Redis Session Setup
+// ---------------------------
+let redisClient = createClient({ url: process.env.REDIS_URL });
+redisClient.connect().catch(console.error);
+
 app.use(
   session({
+    store: new RedisStore({ client: redisClient }),
     secret: process.env.SESSION_SECRET,
     resave: false,
     saveUninitialized: false,
-    cookie: { secure: process.env.NODE_ENV === "production" }, // secure cookies in production
+    cookie: {
+      secure: process.env.NODE_ENV === "production",
+      httpOnly: true,
+      maxAge: 1000 * 60 * 60 * 24, // 1 day
+    },
   })
 );
 
+// ---------------------------
 // Temporary in-memory store for bookings
+// ---------------------------
 let bookings = [];
 
+// ---------------------------
 // Configure email transport
+// ---------------------------
 const transporter = nodemailer.createTransport({
   host: "smtp.gmail.com",
   port: 465,
@@ -45,12 +61,16 @@ const transporter = nodemailer.createTransport({
   },
 });
 
+// ---------------------------
 // Public route for normal users
+// ---------------------------
 app.get("/bookings", (req, res) => {
   res.json([]); // normal users cannot see bookings
 });
 
+// ---------------------------
 // Add a new booking
+// ---------------------------
 app.post("/bookings", (req, res) => {
   const { name, email, date, time, service } = req.body;
 
@@ -58,22 +78,17 @@ app.post("/bookings", (req, res) => {
     return res.status(400).json({ error: "All fields are required" });
   }
 
-  // Prevent double bookings at the same time slot
   const isSlotTaken = bookings.some((b) => b.date === date && b.time === time);
-  if (isSlotTaken) {
+  if (isSlotTaken)
     return res.status(400).json({ error: "This time slot is already booked" });
-  }
 
-  // Max 5 bookings per date
   const bookingsOnDate = bookings.filter((b) => b.date === date);
-  if (bookingsOnDate.length >= 5) {
+  if (bookingsOnDate.length >= 5)
     return res.status(400).json({ error: "This date is fully booked" });
-  }
 
   const newBooking = { id: Date.now(), name, email, date, time, service };
   bookings.push(newBooking);
 
-  // Email to booker
   const bookerMailOptions = {
     from: process.env.EMAIL_USER,
     to: email,
@@ -81,7 +96,6 @@ app.post("/bookings", (req, res) => {
     text: `Hi ${name},\n\nYour booking for ${service} on ${date} at ${time} has been confirmed.\n\nThank you!`,
   };
 
-  // Email to admin
   const adminMailOptions = {
     from: process.env.EMAIL_USER,
     to: process.env.ADMIN_EMAIL,
@@ -102,14 +116,18 @@ app.post("/bookings", (req, res) => {
   res.status(201).json(newBooking);
 });
 
+// ---------------------------
 // Delete a booking (admin only)
+// ---------------------------
 app.delete("/bookings/:id", requireAdmin, (req, res) => {
   const { id } = req.params;
   bookings = bookings.filter((b) => b.id !== parseInt(id));
   res.json({ message: "Booking deleted" });
 });
 
-// Admin login
+// ---------------------------
+// Admin login/logout/status
+// ---------------------------
 app.post("/admin/login", (req, res) => {
   const { username, password } = req.body;
 
@@ -121,35 +139,41 @@ app.post("/admin/login", (req, res) => {
   res.status(401).json({ error: "Invalid credentials" });
 });
 
-// Admin logout
 app.post("/admin/logout", (req, res) => {
   req.session.destroy();
   res.sendStatus(200);
 });
 
-// Check admin status
 app.get("/admin/status", (req, res) => {
   res.json({ isAdmin: !!req.session.isAdmin });
 });
 
+// ---------------------------
 // Middleware to protect admin routes
+// ---------------------------
 function requireAdmin(req, res, next) {
   if (req.session?.isAdmin) return next();
   res.sendStatus(401);
 }
 
-// Protected admin bookings route
+// ---------------------------
+// Admin bookings route
+// ---------------------------
 app.get("/admin/bookings", requireAdmin, (req, res) => {
   res.json(bookings);
 });
 
+// ---------------------------
 // Serve React frontend
+// ---------------------------
 app.use(express.static(path.join(__dirname, "frontend", "build")));
 app.get("/*", (req, res) => {
   res.sendFile(path.join(__dirname, "frontend", "build", "index.html"));
 });
 
+// ---------------------------
 // Start server
+// ---------------------------
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
 });
