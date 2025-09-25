@@ -11,13 +11,25 @@ function BookingSection() {
     service: "",
   });
   const [message, setMessage] = useState("");
-  const [date, setDate] = useState("");
-  const [time, setTime] = useState("");
 
   useEffect(() => {
     fetch("/bookings")
       .then((res) => res.json())
-      .then((data) => setBookings(data))
+      .then((data) => {
+        // Ensure all fields are strings
+        const safeData = data.map((b) => ({
+          id: b.id,
+          name: String(b.name),
+          email: String(b.email),
+          date: String(b.date),
+          time:
+            typeof b.time === "object"
+              ? `${b.time.hour}:${b.time.minute}`
+              : String(b.time),
+          service: String(b.service),
+        }));
+        setBookings(safeData);
+      })
       .catch((err) => console.error(err));
   }, []);
 
@@ -31,16 +43,15 @@ function BookingSection() {
     const selectedDate = formData.date;
     const selectedTime = formData.time;
 
-    // Prevent more than 5 total per date
+    // Prevent more than 5 bookings per date
     const bookingsOnDate = bookings.filter((b) => b.date === selectedDate);
     if (bookingsOnDate.length >= 5) {
       setMessage("This date is fully booked");
       return;
     }
 
-    // Prevent double booking for the same time
-    const sameTimeBooking = bookingsOnDate.find((b) => b.time === selectedTime);
-    if (sameTimeBooking) {
+    // Prevent duplicate time slot
+    if (bookingsOnDate.find((b) => b.time === selectedTime)) {
       setMessage("This time slot is already booked");
       return;
     }
@@ -54,7 +65,15 @@ function BookingSection() {
 
       const data = await res.json();
       if (res.ok) {
-        setBookings([...bookings, data]);
+        // Convert time to string if needed
+        const newBooking = {
+          ...data,
+          time:
+            typeof data.time === "object"
+              ? `${data.time.hour}:${data.time.minute}`
+              : data.time,
+        };
+        setBookings([...bookings, newBooking]);
         setMessage("Booking successfully created!");
         setFormData({ name: "", email: "", date: "", time: "", service: "" });
       } else {
@@ -66,7 +85,7 @@ function BookingSection() {
     }
   };
 
-  // Group bookings by date for calendar view
+  // Group bookings by date
   const bookingsByDate = bookings.reduce((acc, b) => {
     acc[b.date] = acc[b.date] || [];
     acc[b.date].push(b);
@@ -129,11 +148,9 @@ function BookingSection() {
       </form>
 
       <h3>Bookings Calendar</h3>
-
-      {/* Explanation text */}
       <p className="calendar-info">
-        Days marked in <span className="full-day">red</span> are fully booked
-        and unavailable. Please select another date for your appointment.
+        Days marked in <span className="full-day">red</span> are fully booked.
+        Please select another date.
       </p>
 
       {bookings.length === 0 ? (

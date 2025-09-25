@@ -31,11 +31,11 @@ function App() {
                 <ServicesSection />
                 <BookingSection />
                 <ContactModal />
-                <AdminLogin />
               </>
             }
           />
           <Route path="/admin" element={<AdminDashboard />} />
+          <Route path="/admin/login" element={<AdminLogin />} />
         </Routes>
       </div>
 
