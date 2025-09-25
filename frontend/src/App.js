@@ -1,6 +1,7 @@
 import React from "react";
 import { Routes, Route } from "react-router-dom";
 import AdminDashboard from "./components/AdminDashboard";
+import AdminLogin from "./components/AdminLogin";
 import Navbar from "./components/Navbar";
 import BookingSection from "./components/BookingSection";
 import ServicesSection from "./components/ServicesSection";
@@ -30,6 +31,7 @@ function App() {
                 <ServicesSection />
                 <BookingSection />
                 <ContactModal />
+                <AdminLogin />
               </>
             }
           />

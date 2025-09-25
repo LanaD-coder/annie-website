@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import { FaHome, FaPhoneVolume, FaCut } from "react-icons/fa";
+import { RiAdminFill } from "react-icons/ri";
 
 function Navbar() {
   const [isAdmin, setIsAdmin] = useState(false);
@@ -14,7 +16,6 @@ function Navbar() {
   return (
     <header className="navbar">
       <div className="navbar-container">
-        {/* Logo on the left */}
         <div className="logo">
           <img
             src={`${process.env.PUBLIC_URL}/assets/images/logo-annie.png`}
@@ -22,30 +23,35 @@ function Navbar() {
           />
         </div>
 
-        {/* Navigation links */}
         <nav>
           <ul>
             <li>
-              <Link to="/">Home</Link>
+              <Link to="/">
+                <FaHome size={20} />
+              </Link>
             </li>
             <li>
-              <Link to="/services">Services</Link>
+              <Link to="/services">
+                <FaCut size={20} />
+              </Link>
             </li>
             <li>
-              <Link to="/profile">Profile</Link>
-            </li>
-            <li>
-              <Link to="/contact">Contact</Link>
+              <Link to="/">
+                <FaPhoneVolume size={20} />
+              </Link>{" "}
             </li>
 
-            {/* Conditional admin link */}
             {isAdmin ? (
               <li>
-                <Link to="/admin">Admin Dashboard</Link>
+                <Link to="/admin">
+                  <RiAdminFill size={20} /> Admin Dashboard
+                </Link>
               </li>
             ) : (
               <li>
-                <Link to="/admin/login">Admin Login</Link>
+                <Link to="/admin/login">
+                  <RiAdminFill size={20} /> Admin Login
+                </Link>
               </li>
             )}
           </ul>
