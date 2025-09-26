@@ -4,9 +4,11 @@ function AdminDashboard() {
   const [bookings, setBookings] = useState([]);
 
   useEffect(() => {
+    const auth = localStorage.getItem("auth");
+
     fetch("/admin/bookings", {
       headers: {
-        Authorization: "Basic " + btoa("admin:yourStrongPassword"),
+        Authorization: "Basic " + auth,
       },
     })
       .then((res) => {
@@ -17,9 +19,21 @@ function AdminDashboard() {
       .catch((err) => console.error(err));
   }, []);
 
+  const auth = localStorage.getItem("auth");
+  const [user] = atob(auth).split(":");
+
   return (
     <div>
-      <h1>Admin Dashboard</h1>
+      <h1>Welcome {user}!</h1>
+      <h2>Admin Dashboard</h2>
+      <button
+        onClick={() => {
+          localStorage.removeItem("auth");
+          window.location.href = "/";
+        }}
+      >
+        Logout
+      </button>
       <ul>
         {bookings.map((b) => (
           <li key={b.id}>

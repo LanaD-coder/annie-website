@@ -8,6 +8,7 @@ import ServicesSection from "./components/ServicesSection";
 import ProfileSection from "./components/ProfileSection";
 import ContactModal from "./components/ContactModal";
 import FooterSection from "./components/FooterSection";
+import ProtectedRoute from "./components/ProtectedRoute";
 
 function App() {
   const location = useLocation();
@@ -27,6 +28,7 @@ function App() {
         <Navbar />
 
         <Routes>
+          {/* Public routes */}
           <Route
             path="/"
             element={
@@ -38,8 +40,17 @@ function App() {
               </>
             }
           />
-          <Route path="/admin" element={<AdminDashboard />} />
           <Route path="/admin/login" element={<AdminLogin />} />
+
+          {/* Protected admin route */}
+          <Route
+            path="/admin"
+            element={
+              <ProtectedRoute>
+                <AdminDashboard />
+              </ProtectedRoute>
+            }
+          />
         </Routes>
       </div>
 

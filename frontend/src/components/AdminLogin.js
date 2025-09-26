@@ -1,20 +1,24 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom"; // ✅ import navigate hook
 import "../styles.css";
 
 function AdminLogin() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const navigate = useNavigate();
+  const superusers = [
+    { username: "Anniepan", password: "salonlavidadmin@2025" },
+    { username: "LanaD-coder", password: "DOLANA7381@" },
+  ];
 
   useEffect(() => {
-    // Set full-page background when this page is mounted
     document.body.style.backgroundImage = `url(${process.env.PUBLIC_URL}/assets/images/pexels-raymond-li-70587962-33328237.jpg)`;
     document.body.style.backgroundSize = "cover";
     document.body.style.backgroundPosition = "center";
     document.body.style.backgroundRepeat = "no-repeat";
     document.body.style.minHeight = "100vh";
 
-    // Cleanup: reset background when component unmounts
     return () => {
       document.body.style.backgroundImage = "";
       document.body.style.backgroundSize = "";
@@ -24,13 +28,25 @@ function AdminLogin() {
     };
   }, []);
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
     if (!username || !password) {
       setError("Username and password are required");
       return;
     }
-    console.log({ username, password });
+
+    // check if user is in the superusers list
+    const validUser = superusers.find(
+      (u) => u.username === username && u.password === password
+    );
+
+    if (validUser) {
+      // store credentials securely (base64 for Basic Auth)
+      localStorage.setItem("auth", btoa(username + ":" + password));
+      navigate("/dashboard");
+    } else {
+      setError("Invalid username or password");
+    }
   };
 
   return (
@@ -61,7 +77,7 @@ function AdminLogin() {
             />
           </div>
 
-          <br></br>
+          <br />
 
           <div className="mb-3">
             <label htmlFor="password" className="form-label">
